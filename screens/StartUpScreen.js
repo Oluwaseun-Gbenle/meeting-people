@@ -10,7 +10,7 @@ const StartUpScreen = () => {
 
   useEffect(() => {
     setTimeout(() => {
-      navigation.navigate('Home'); // Navigate to your main app screen
+      navigation.navigate('Login'); // Navigate to your main app screen
     }, 3000); // Display the logo for 4 seconds
   }, []);
 

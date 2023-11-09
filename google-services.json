@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "1047637670295",
+    "project_id": "meetingpeople-b6046",
+    "storage_bucket": "meetingpeople-b6046.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1047637670295:android:69cd4b4804f9e1d964ecd2",
+        "android_client_info": {
+          "package_name": "com.peoplesApp.meetingPeople"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1047637670295-fmpu0ce73i422dsb4s0330oma2a1jol0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.peoplesApp.meetingPeople",
+            "certificate_hash": "5deca00aa0e31729b1926a3a3f7be53763fd5b0c"
+          }
+        },
+        {
+          "client_id": "1047637670295-7vvde5elajt4sdmfsb74bkgqhkd8gs49.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDlBvgU1YgaWoGJQ3zdhVZgKjbvnVwO7Rs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1047637670295-7vvde5elajt4sdmfsb74bkgqhkd8gs49.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1047637670295-tk3oq2h6lepql7fejoik1m22qqnb6u81.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.peoplesApp.meetingPeople"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
