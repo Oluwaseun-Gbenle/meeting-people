@@ -3,14 +3,23 @@ import React, { useEffect, useRef } from "react";
 import { useNavigation } from "@react-navigation/core";
 import { Ionicons } from '@expo/vector-icons';
 import * as Animatable from 'react-native-animatable';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const StartUpScreen = () => {
   const navigation = useNavigation();
   const textRef = useRef(null);
 
   useEffect(() => {
-    setTimeout(() => {
-      navigation.navigate('Login'); // Navigate to your main app screen
+
+  setTimeout(() => { 
+     AsyncStorage.getItem("user")
+    .then(userDetails => {
+      if (userDetails) {
+        navigation.navigate('ChatLobby');
+      } else {
+          navigation.navigate('Login');
+      }
+    }) 
     }, 3000); // Display the logo for 4 seconds
   }, []);
 

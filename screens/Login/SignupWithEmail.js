@@ -7,6 +7,7 @@ import { signUpUser } from "./firebaseFunc";
 import { Formik } from "formik";
 import * as Yup from "yup";
 import { ActivityIndicator } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const SignupWithEmail = ({ navigation }) => {
   const [passwordVisible, setPasswordVisible] = useState(false);
@@ -23,6 +24,7 @@ const SignupWithEmail = ({ navigation }) => {
       .required("Confirm password is required"),
     agreement: Yup.boolean().oneOf([true], "To continue please agree to the terms and conditions"),
   });
+  AsyncStorage.removeItem("user");
 
   return (
     <SafeAreaView className="flex-1 bg-white">
@@ -50,7 +52,7 @@ const SignupWithEmail = ({ navigation }) => {
               {touched.userName && errors.userName && <Text className="text-red-500 pb-2">{errors.userName}</Text>}
 
               {/* Name Input */}
-              <TextInput placeholder="Name" value={values.userName} onChangeText={(text) => setFieldValue("userName", text)} className="border border-gray-400 rounded-3xl p-4 mb-4" />
+              <TextInput placeholder="Username" value={values.userName} onChangeText={(text) => setFieldValue("userName", text)} className="border border-gray-400 rounded-3xl p-4 mb-4" />
 
               {/* Email Address Input */}
               {touched.email && errors.email && <Text className="text-red-500 pb-2">{errors.email}</Text>}

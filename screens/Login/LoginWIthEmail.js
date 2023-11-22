@@ -6,6 +6,7 @@ import { Formik } from "formik";
 import * as Yup from "yup";
 import { LogInUser } from "./firebaseFunc";
 import { ActivityIndicator } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const LoginWIthEmail = ({ navigation }) => {
   const [passwordVisible, setPasswordVisible] = useState(false);
@@ -16,6 +17,8 @@ const LoginWIthEmail = ({ navigation }) => {
       .required("Password is required")
       .matches(/^(?=.*\d)[A-Za-z\d]{8,}$/, "Password must be at least 8 characters long and include at least one number."),
   });
+
+  
   return (
     <SafeAreaView className="flex-1 bg-white">
       {/* header */}

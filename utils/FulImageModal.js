@@ -1,22 +1,14 @@
-import React, { useState } from 'react';
-import { View, Image, TouchableOpacity, Modal, StyleSheet } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialIcons';  
+import React, { useState } from "react";
+import { View, Image, TouchableOpacity, Modal, StyleSheet } from "react-native";
+import Icon from "react-native-vector-icons/MaterialIcons";
 
-const FullImgModal = ({modalVisible, setModalVisible,image}) => {
+const FullImgModal = ({ modalVisible, setModalVisible, image }) => {
   return (
     <View style={styles.container}>
       {modalVisible && (
-        <Modal
-          transparent={true}
-          animationType="fade"
-          visible={modalVisible}
-          onRequestClose={() => setModalVisible(false)}
-        >
+        <Modal transparent={true} animationType="fade" visible={modalVisible} onRequestClose={() => setModalVisible(false)}>
           <TouchableOpacity style={styles.modalBackground} onPress={() => setModalVisible(false)}>
-            <Image
-              source={{ uri: image }}
-              style={styles.fullSizeImage}
-            />
+            <Image source={{ uri: image }} style={styles.fullSizeImage} />
             <TouchableOpacity style={styles.closeButton} onPress={() => setModalVisible(false)}>
               <Icon name="close" size={30} color="white" />
             </TouchableOpacity>
@@ -30,8 +22,8 @@ const FullImgModal = ({modalVisible, setModalVisible,image}) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   profileImage: {
     width: 100,
@@ -40,16 +32,16 @@ const styles = StyleSheet.create({
   },
   modalBackground: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.9)',
-    alignItems: 'center',
+    backgroundColor: "rgba(0, 0, 0, 0.9)",
+    alignItems: "center",
   },
   fullSizeImage: {
-    width: '100%',
-    height: '90%',
-    resizeMode: 'contain',
+    width: "100%",
+    height: "90%",
+    resizeMode: "contain",
   },
   closeButton: {
-    position: 'absolute',
+    position: "absolute",
     top: 50,
     right: 20,
   },

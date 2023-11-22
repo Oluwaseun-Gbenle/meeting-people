@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, Animated } from 'react-native';
 import { FontAwesome5 } from "@expo/vector-icons";
 
-const Dice = () => {
+const Dice = ({ onDiceRoll }) => {
   const [rotation, setRotation] = useState(new Animated.Value(0));
   const [number, setNumber] = useState(1);
 
@@ -22,6 +22,13 @@ const Dice = () => {
     });
   };
 
+  const handlePress = () => {
+    RollDice();
+    if (onDiceRoll) {
+      onDiceRoll();
+    }
+  };
+
   return (
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center'}}>
       <Animated.View
@@ -32,7 +39,7 @@ const Dice = () => {
           }) }],
         }}
       >
-          <FontAwesome5 name="dice" size={28} color="black" onPress={RollDice}/>
+          <FontAwesome5 name="dice" size={28} color="black" onPress={handlePress}/>
       </Animated.View>
     </View>
   );

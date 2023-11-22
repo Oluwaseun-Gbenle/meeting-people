@@ -1,61 +1,83 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { View, SafeAreaView, Text, TouchableOpacity, Image } from "react-native";
 import { GiftedChat } from "react-native-gifted-chat";
-import { renderBubble, renderLoading, renderSend } from "../utils/ChatRender";
+import { addRecipientToRandomListIfNeeded, renderBubble, renderLoading, renderSend } from "../utils/ChatRender";
 import BackBtn from "../utils/BackBtn";
+import { collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, setDoc, doc } from "firebase/firestore";
+import { db, realTimeDb } from "../firebaseConfig";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { onDisconnect, ref, set } from "firebase/database";
+import { fetchUserOnlineStatus } from "../utils/OnlineStatus";
+import { Entypo } from "@expo/vector-icons";
 
-const Chat = ({ navigation }) => {
-  const chats = [
-    {
-      id: "1",
-      name: "Dora",
-      lastMessage: "Hey there!",
-      time: "2:30 PM",
-      image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcREO17hg6KvLlweeZWN0LCEdi-OXM9qGpbQ9w&usqp=CAU",
-      online: true,
-    },
-    {
-      id: "2",
-      name: "Aminu",
-      lastMessage: "Hey there to you too nice to meet you",
-      time: "6:30 PM",
-      image: "https://a.storyblok.com/f/191576/1200x800/215e59568f/round_profil_picture_after_.webp",
-      online: false,
-    },
-  ];
-  const currentUser = {
-    email: "me@you.com",
-    displayName: "Dora",
-    photoURL: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcREO17hg6KvLlweeZWN0LCEdi-OXM9qGpbQ9w&usqp=CAU",
-  };
+const Chat = ({ route, navigation }) => {
+  const { friendId, friendName, friendImage } = route.params;
+  const [currentUserDetails, setcurrentUserDetails] = useState({});
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isFriendOnline, setIsFriendOnline] = useState(true);
+  const chatId = [currentUserDetails.uid, friendId].sort().join("_");
+
   useEffect(() => {
-    setMessages([
-      {
-        _id: "you",
-        text: "Hi there",
-        createdAt: new Date(),
-        user: {
-          _id: currentUser?.email,
-          name: currentUser?.displayName,
-          avatar: currentUser?.photoURL,
-        },
-        // Mark the message as sent, using one tick
-        sent: true,
-        // Mark the message as received, using two tick
-        received: true,
-        // Mark the message as pending with a clock loader
-        pending: false,
-        isTyping: true,
-      },
-    ]);
+    (async () => {
+      const currentUserData = await AsyncStorage.getItem("user");
+      const currentUser = JSON.parse(currentUserData);
+      setcurrentUserDetails(currentUser);
+    })();
   }, []);
 
-  const onSend = (newMessages = []) => {
-    setMessages((previousMessages) => GiftedChat.append(previousMessages, newMessages));
-  };
+  useEffect(() => {
+   const isOnline = fetchUserOnlineStatus(friendId)// Listen to friend's online status
+  setIsFriendOnline(isOnline)
+  }, [friendId])
+  
 
+  useEffect(() => {
+    // Create a query to get messages
+    const messagesRef = collection(db, `chats/${chatId}/messages`);
+    const q = query(messagesRef, orderBy("createdAt", "desc"));
+    // Subscribe to message updates
+    const unsubscribe = onSnapshot(q, async (querySnapshot) => {
+      const msgs = querySnapshot.docs.map((doc) => {
+        const data = doc.data();
+        const createdAt = data.createdAt.toDate();
+        return { _id: doc.id, ...data, createdAt };
+      });
+      setMessages(msgs);
+      //addRecipientToRandomListIfNeeded(friendId,currentUserDetails.uid)
+      // If there are new messages, update the chat details
+      if (msgs.length > 0) {
+        const lastMessage = msgs[0];
+        const chatDetailsRef = doc(db, `chatDetails/${chatId}`);
+        await setDoc(
+          chatDetailsRef,
+          {
+            lastMessage: lastMessage.text,
+            lastMessageTime: lastMessage.createdAt,
+            recipient: lastMessage.recipient,
+          },
+          { merge: true }
+        );
+      }
+    });
+
+    return () => {
+      unsubscribe();
+    }; // Unsubscribe on unmount
+  }, [chatId, realTimeDb, currentUserDetails, friendId]);
+
+  const onSend = useCallback(
+    (msgs = []) => {
+      msgs.forEach((msg) => {
+        // Add new message to Firestore
+        const messagesRef = collection(db, `chats/${chatId}/messages`);
+        addDoc(messagesRef, { ...msg, createdAt: new Date(), recipient: friendId });
+      });
+    },
+    [chatId, friendId]
+  );
+
+console.log('isfriendonline',isFriendOnline);
   return (
     <SafeAreaView className="flex-1 bg-white">
       <View className="flex-1 p-2">
@@ -67,11 +89,17 @@ const Chat = ({ navigation }) => {
               }}
             />
             <View className="ml-5">
-              <Image source={{ uri: chats[0].image }} className="w-12 h-12 rounded-full" />
-              {chats[0].online && <View className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border border-white"></View>}
+              {Object.keys(friendImage || {}).length === 0 ?  (
+                <View className=" bg-slate-400 w-12 h-12 justify-center items-center rounded-full">
+                  <Entypo name="user" size={25} color="white" />
+                </View>
+              ) : (
+                <Image source={{ uri: friendImage }} className="w-12 h-12 rounded-full" />
+              )}
+              {isFriendOnline && <View className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border border-white"></View>}
             </View>
 
-            <Text className="text-xl font-semibold mx-3">{"Dora Light"}</Text>
+            <Text className="text-xl font-semibold mx-3">{friendName}</Text>
           </View>
         </View>
         <GiftedChat
@@ -81,10 +109,11 @@ const Chat = ({ navigation }) => {
           renderSend={renderSend}
           renderBubble={renderBubble}
           renderLoading={renderLoading}
-        isLoadingEarlier={loading}
+          isLoadingEarlier={loading}
           user={{
-            _id: "me",
-            name: "Archer",
+            _id: currentUserDetails?.uid,
+            name: currentUserDetails?.displayName,
+            avatar: friendImage,
           }}
         />
       </View>

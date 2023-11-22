@@ -1,9 +1,7 @@
-// components/ProfileDropdown.js
-
-import React, { useState } from "react";
+import React from "react";
 import { View, Text, TouchableOpacity, Modal, TouchableWithoutFeedback } from "react-native";
 
-const Dropdown = ({ isOpen, setIsOpen, list,navigation }) => {
+const Dropdown = ({ isOpen, setIsOpen, list,navigation,func }) => {
   return (
     <View style={{ position: "relative" }}>
       {isOpen && (
@@ -28,7 +26,7 @@ const Dropdown = ({ isOpen, setIsOpen, list,navigation }) => {
                 {list.map((item, index) => (
                   <TouchableOpacity key={index} 
                   style={{ flexDirection: "row", alignItems: "center", padding: 10, borderBottomWidth: 1, borderBottomColor: "#e0e0e0" }}
-                  onPress={()=>{navigation.navigate(item.navigate); setIsOpen(false)}}
+                  onPress={()=>{navigation.navigate(item.navigate); setIsOpen(false);item.name === 'Logout' && func()}}
                   > 
                     <Text style={{ marginLeft: 10 }}>{item.name}</Text>
                   </TouchableOpacity>

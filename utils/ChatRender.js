@@ -50,3 +50,20 @@ export const renderBubble = (props) => {
     />
   );
 };
+
+export const addRecipientToRandomListIfNeeded = async (friendId, currentUserId) => {
+  const listRef = doc(db, "userRandomList", friendId);
+  const docSnap = await getDoc(listRef);
+
+  if (docSnap.exists()) {
+    const userList = docSnap.data().users || [];
+
+    // Check if recipient is already in the list
+    if (!userList.some(user => user.id === currentUserId)) {
+      // Add the recipient to the list
+      const updatedList = [...userList, { id: currentUserId }]; // Add other necessary details of the recipient
+      await setDoc(listRef, { users: updatedList }, { merge: true });
+    }
+  } 
+};
+
